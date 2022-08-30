@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   ], redirect: _guard);
 
   String? _guard(GoRouterState state) {
-    final bool signedIn = false;
+    final bool signedIn = store.state.auth.isAuth;
     final bool signingIn = state.subloc == '/login';
 
     // Go to /signin if the user is not signed in
@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print(store.state.auth.isAuth);
     return StoreProvider(
         store: store,
         child: MaterialApp.router(
