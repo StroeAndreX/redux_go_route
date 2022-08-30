@@ -27,7 +27,24 @@ class MyApp extends StatelessWidget {
         path: '/login',
         pageBuilder: (BuildContext context, GoRouterState state) =>
             MaterialPage<void>(key: state.pageKey, child: const SignIn())),
-  ]);
+  ], redirect: _guard);
+
+  String? _guard(GoRouterState state) {
+    final bool signedIn = false;
+    final bool signingIn = state.subloc == '/login';
+
+    // Go to /signin if the user is not signed in
+    if (!signedIn && !signingIn) {
+      return '/login';
+    }
+    // Go to /books if the user is signed in and tries to go to /signin.
+    else if (signedIn && signingIn) {
+      return '/home';
+    }
+
+    // no redirect
+    return null;
+  }
 
   // This widget is the root of your application.
   @override
