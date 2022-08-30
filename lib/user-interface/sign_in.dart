@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:redux_go_route/redux/actions/auth_actions.dart';
+import 'package:redux_go_route/redux/store.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -21,7 +23,7 @@ class _SignInState extends State<SignIn> {
               const Text("Hello new user"),
               TextButton(
                 onPressed: () {
-                  context.go('/home');
+                  store.dispatch(UpdateAuthState());
                 },
                 child: const Text("Login"),
               )

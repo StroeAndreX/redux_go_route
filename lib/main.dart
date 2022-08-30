@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:go_router/go_router.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_go_route/models/app_state.dart';
+import 'package:redux_go_route/redux/actions/auth_actions.dart';
 import 'package:redux_go_route/redux/store.dart';
 import 'package:redux_go_route/user-interface/home.dart';
 import 'package:redux_go_route/user-interface/sign_in.dart';
@@ -49,14 +52,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print(store.state.auth.isAuth);
     return StoreProvider(
         store: store,
-        child: MaterialApp.router(
-          routeInformationProvider: _router.routeInformationProvider,
-          routerDelegate: _router.routerDelegate,
-          routeInformationParser: _router.routeInformationParser,
-        ));
+        child: StoreConnector<AppState, _ViewModel>(
+            converter: _ViewModel.fromStore,
+            builder: (BuildContext context, _ViewModel viewModel) {
+              if (viewModel.isLoggedIn) {
+                _router.refresh();
+              }
+              return MaterialApp.router(
+                routeInformationProvider: _router.routeInformationProvider,
+                routerDelegate: _router.routerDelegate,
+                routeInformationParser: _router.routeInformationParser,
+              );
+            }));
   }
 }
 
@@ -79,4 +88,17 @@ class FadeTransitionPage extends CustomTransitionPage<void> {
             child: child);
 
   static final CurveTween _curveTween = CurveTween(curve: Curves.easeIn);
+}
+
+class _ViewModel {
+  final bool isLoggedIn;
+  final Function onPressedCallback;
+
+  _ViewModel(this.isLoggedIn, this.onPressedCallback);
+
+  static _ViewModel fromStore(Store<AppState> store) {
+    return _ViewModel(store.state.auth.isAuth, () {
+      store.dispatch(UpdateAuthState());
+    });
+  }
 }
